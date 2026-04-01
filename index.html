@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>キャリア診断 | Wa-kachi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #FFFAF1;
+      --main: #4A3E31;
+      --sub: #8E7E6A;
+      --accent: #C4A882;
+      --border: #E2D9C8;
+      --white: #FFFFFF;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: var(--bg);
+      color: var(--main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      line-height: 1.7;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      max-width: 600px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== TOP SCREEN ===== */
+    #screen-top {
+      align-items: center;
+      text-align: center;
+      gap: 32px;
+    }
+
+    .top-label {
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      color: var(--sub);
+      text-transform: uppercase;
+    }
+
+    .top-title {
+      font-size: clamp(22px, 5vw, 30px);
+      font-weight: 700;
+      color: var(--main);
+      line-height: 1.5;
+    }
+
+    .top-desc {
+      font-size: 14px;
+      color: var(--sub);
+      max-width: 420px;
+    }
+
+    .top-meta {
+      font-size: 12px;
+      color: var(--sub);
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .top-meta span::before {
+      content: "— ";
+    }
+
+    /* ===== QUESTION SCREEN ===== */
+    #screen-question {
+      gap: 28px;
+    }
+
+    .question-nav {
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      color: var(--sub);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Noto Sans JP', sans-serif;
+      padding: 0;
+      transition: color 0.2s;
+    }
+
+    .btn-back:hover {
+      color: var(--main);
+    }
+
+    .btn-back:disabled {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--sub);
+    }
+
+    .progress-bar-wrap {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--main);
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    .question-text {
+      font-size: clamp(15px, 3.5vw, 18px);
+      font-weight: 700;
+      color: var(--main);
+      line-height: 1.6;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .choice-btn {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 14px;
+      color: var(--main);
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.1s;
+      line-height: 1.6;
+    }
+
+    .choice-btn:hover {
+      border-color: var(--accent);
+      background: #FFF5E4;
+      transform: translateX(2px);
+    }
+
+    .choice-btn:active {
+      transform: translateX(0);
+    }
+
+    /* ===== RESULT SCREEN ===== */
+    #screen-result {
+      gap: 28px;
+    }
+
+    .result-label {
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      color: var(--sub);
+      text-transform: uppercase;
+    }
+
+    .result-type-name {
+      font-size: clamp(22px, 5vw, 28px);
+      font-weight: 700;
+      color: var(--main);
+    }
+
+    .result-subcopy {
+      font-size: clamp(14px, 3vw, 17px);
+      color: var(--sub);
+      font-weight: 500;
+    }
+
+    .result-divider {
+      height: 1px;
+      background: var(--border);
+    }
+
+    .result-desc {
+      font-size: 14px;
+      color: var(--main);
+      line-height: 1.85;
+    }
+
+    .result-ws-text {
+      font-size: 14px;
+      color: var(--sub);
+      background: #F5EFE3;
+      border-radius: 10px;
+      padding: 16px 18px;
+      line-height: 1.8;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 28px;
+      border-radius: 50px;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.1s;
+      width: 100%;
+    }
+
+    .btn:hover {
+      opacity: 0.85;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--main);
+      color: var(--white);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--main);
+      border: 1.5px solid var(--main);
+      font-size: 14px;
+    }
+
+    .share-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-share {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 50px;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--main);
+      text-align: center;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .btn-share:hover {
+      border-color: var(--accent);
+      background: #FFF5E4;
+    }
+
+    .btn-retry {
+      font-size: 13px;
+      color: var(--sub);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Noto Sans JP', sans-serif;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      padding: 0;
+      align-self: center;
+    }
+
+    .btn-retry:hover {
+      color: var(--main);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP SCREEN -->
+  <div id="screen-top" class="screen active">
+    <p class="top-label">Career Diagnosis</p>
+    <h1 class="top-title">あなたのキャリアは<br>今、どんな状態？</h1>
+    <p class="top-desc">6つの質問に答えるだけで、今のキャリアの状態がわかります。直感で選んでください。</p>
+    <div class="top-meta">
+      <span>所要時間 約2分</span>
+      <span>全6問</span>
+    </div>
+    <button class="btn btn-primary" onclick="startDiagnosis()">診断スタート</button>
+  </div>
+
+  <!-- QUESTION SCREEN -->
+  <div id="screen-question" class="screen">
+    <div class="progress-header">
+      <span id="progress-text">1 / 6</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+    </div>
+    <div class="question-nav">
+      <button class="btn-back" id="btn-back" onclick="goBack()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        前の問いに戻る
+      </button>
+    </div>
+    <p class="question-text" id="question-text"></p>
+    <div class="choices" id="choices"></div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="screen-result" class="screen">
+    <p class="result-label">診断結果</p>
+    <h2 class="result-type-name" id="result-type-name"></h2>
+    <p class="result-subcopy" id="result-subcopy"></p>
+    <div class="result-divider"></div>
+    <p class="result-desc" id="result-desc"></p>
+    <div class="result-ws-text" id="result-ws-text"></div>
+    <a id="btn-apply" class="btn btn-primary" href="https://visioncarat.com" target="_blank" rel="noopener">体験会に申し込む</a>
+    <div class="share-buttons">
+      <a id="btn-share-x" class="btn-share" href="#" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X でシェア
+      </a>
+      <button class="btn-share" onclick="copyResult()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span id="copy-label">コピー</span>
+      </button>
+    </div>
+    <button class="btn-retry" onclick="restart()">もう一度診断する</button>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        text: "今の仕事やキャリアの方向性について、どれが近いですか？",
+        choices: [
+          { type: "A", text: "やりたい方向は決めて動いているが、うまくいっている感じがしない" },
+          { type: "B", text: "できることで選ぶことが多く、無難な方向にまとまりがち" },
+          { type: "C", text: "決めたはずなのに、本当にこれでいいのか迷うことがある" },
+          { type: "D", text: "考えたくても、日々の忙しさでそれどころではない" },
+          { type: "E", text: "特に迷いはなく、今の方向性に納得している" },
+        ]
+      },
+      {
+        text: "キャリアの目標を考えるとき、どれが近いですか？",
+        choices: [
+          { type: "A", text: "目標はあるが、どう進めばいいかしっくりきていない" },
+          { type: "B", text: "人からどう見られるかを考えて選ぶことが多い" },
+          { type: "C", text: "大事にしたいことが複数あって、ひとつに決めきれない" },
+          { type: "D", text: "目標を考える余裕がない" },
+          { type: "E", text: "自分の軸で目標を決められていて、迷いが少ない" },
+        ]
+      },
+      {
+        text: "仕事やキャリアについて考えるとき、どんな感覚がありますか？",
+        choices: [
+          { type: "A", text: "やるべきことはやっているが、手応えがない" },
+          { type: "B", text: "ちゃんとやっているはずなのに、自分の意思で選んでいる感じがしない" },
+          { type: "C", text: "決めたはずなのに、また迷ってしまう" },
+          { type: "D", text: "考えようとすると疲れてしまう" },
+          { type: "E", text: "やっていることに手応えがあり、前に進んでいる感覚がある" },
+        ]
+      },
+      {
+        text: "自分の価値観や大切にしていることについて、どれが近いですか？",
+        choices: [
+          { type: "A", text: "大事にしていることは明確だが、行動にうまく活かしきれていない" },
+          { type: "B", text: "大切なことを考えても、結局無難な選択に落ち着くことが多い" },
+          { type: "C", text: "複数あって、どれを優先すべきか整理できていない" },
+          { type: "D", text: "考える余裕がなく、深く向き合えていない" },
+          { type: "E", text: "大切にしていることが明確で、行動に活かせている" },
+        ]
+      },
+      {
+        text: "キャリアの決断をするとき、どれが近いですか？",
+        choices: [
+          { type: "A", text: "決めて動いているが、うまく進んでいる実感がない" },
+          { type: "B", text: "これで大丈夫かを考えすぎて、決めきれないことがある" },
+          { type: "C", text: "いくつかの選択肢の間で行ったり来たりしてしまう" },
+          { type: "D", text: "決断する前に疲れてしまう" },
+          { type: "E", text: "決断に迷いが少なく、自分の判断を信頼できている" },
+        ]
+      },
+      {
+        text: "今の自分の状態として、最も近いのはどれですか？",
+        choices: [
+          { type: "A", text: "目標に向かって動いているが、空回りしている感じがある" },
+          { type: "B", text: "変えたい気持ちはあるが、大きく外さない選択を続けている感覚がある" },
+          { type: "C", text: "仕事もプライベートも大事で、どう折り合いをつければいいか迷っている" },
+          { type: "D", text: "とにかく余裕がない、まず休みたい" },
+          { type: "E", text: "今の状態に概ね満足していて、大きな詰まりを感じていない" },
+        ]
+      }
+    ];
+
+    const results = {
+      A: {
+        typeName: "空回りタイプ",
+        subcopy: "やってるのに、手応えがない",
+        desc: "目標はある、行動もしている。でも結果につながっていない感覚がある。それは意志や能力の問題ではなく、軌道修正の仕組みが足りていないだけかもしれない。",
+        wsText: "Wa-kachiの体験会では、あなたの行動がなぜ空回りしているのかを一緒に整理します。まず一度、話しに来てください。",
+        showApply: true,
+      },
+      B: {
+        typeName: "正解合わせタイプ",
+        subcopy: "ちゃんとやってるのに、自分の感じがしない",
+        desc: "動けていないのは、意志が弱いからではない。判断の基準が、いつの間にか自分の外側に置かれているから。自分が何を大切にしているかが言葉になると、動き方が変わる。",
+        wsText: "Wa-kachiの体験会では、あなたの判断基準を自分の内側に取り戻すための最初の一歩を体験できます。",
+        showApply: true,
+      },
+      C: {
+        typeName: "しっくりこないタイプ",
+        subcopy: "決めたはずなのに、これでいいのかわからない",
+        desc: "大切なことが複数あって、どれも本物。だから決めきれない。これは優柔不断ではなく、複数の自分軸が整理されていない状態。統合できると、腹落ちした選択ができるようになる。",
+        wsText: "Wa-kachiの体験会では、あなたの複数の価値観を整理して、納得感のある方向性を見つける体験ができます。",
+        showApply: true,
+      },
+      D: {
+        typeName: "アップアップタイプ",
+        subcopy: "考えたいけど、それどころじゃない",
+        desc: "今は余裕がない。それは本当のことで、無理に前に進もうとしなくていい。まず余白を作ることが先決。その準備ができたとき、Wa-kachiは力になれる。",
+        wsText: "今すぐでなくていい。余裕が生まれたとき、また来てください。",
+        showApply: false,
+      },
+      E: {
+        typeName: "順調タイプ",
+        subcopy: "自分らしく、進めている",
+        desc: "今のあなたは、自分の軸で動けている。無理にキャリア支援を受ける必要はない。このまま進んでいい。",
+        wsText: "もし将来、新しいステージで壁を感じたときは、Wa-kachiを思い出してください。",
+        showApply: false,
+      },
+    };
+
+    let currentQ = 0;
+    let scores = { A: 0, B: 0, C: 0, D: 0, E: 0 };
+    let currentChoices = [];
+    let answers = [];
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function startDiagnosis() {
+      currentQ = 0;
+      scores = { A: 0, B: 0, C: 0, D: 0, E: 0 };
+      answers = [];
+      showScreen('screen-question');
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQ];
+      const total = questions.length;
+      const pct = Math.round((currentQ / total) * 100);
+
+      document.getElementById('progress-text').textContent = `${currentQ + 1} / ${total}`;
+      document.getElementById('progress-pct').textContent = `${pct}%`;
+      document.getElementById('progress-bar').style.width = `${pct}%`;
+      document.getElementById('question-text').textContent = q.text;
+      document.getElementById('btn-back').disabled = currentQ === 0;
+
+      currentChoices = shuffle(q.choices);
+      const container = document.getElementById('choices');
+      container.innerHTML = '';
+      currentChoices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice.text;
+        btn.addEventListener('click', () => selectChoice(choice.type));
+        container.appendChild(btn);
+      });
+    }
+
+    function selectChoice(type) {
+      answers.push(type);
+      scores[type]++;
+      currentQ++;
+      if (currentQ < questions.length) {
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function goBack() {
+      if (currentQ === 0) return;
+      const prevType = answers.pop();
+      scores[prevType]--;
+      currentQ--;
+      renderQuestion();
+    }
+
+    function calcResult() {
+      const eCount = scores.E;
+      const others = scores.A + scores.B + scores.C + scores.D;
+
+      // E最多、またはE複数かつ他が分散
+      if (eCount >= 4) return 'E';
+      const maxNonE = Math.max(scores.A, scores.B, scores.C, scores.D);
+      if (eCount > maxNonE) return 'E';
+      if (eCount >= 2 && eCount === maxNonE) {
+        // E複数かつ他と同数の場合 → E優先
+        return 'E';
+      }
+
+      // 最多タイプを特定
+      const types = ['A', 'B', 'C', 'D'];
+      let max = 0;
+      types.forEach(t => { if (scores[t] > max) max = scores[t]; });
+
+      const tied = types.filter(t => scores[t] === max);
+      if (tied.length === 1) return tied[0];
+
+      // 同数の場合はB優先
+      if (tied.includes('B')) return 'B';
+      return tied[0];
+    }
+
+    function showResult() {
+      const type = calcResult();
+      const r = results[type];
+
+      document.getElementById('result-type-name').textContent = r.typeName;
+      document.getElementById('result-subcopy').textContent = r.subcopy;
+      document.getElementById('result-desc').textContent = r.desc;
+      document.getElementById('result-ws-text').textContent = r.wsText;
+
+      const applyBtn = document.getElementById('btn-apply');
+      if (r.showApply) {
+        applyBtn.style.display = 'flex';
+      } else {
+        applyBtn.style.display = 'none';
+      }
+
+      const shareText = `キャリア診断結果：${r.typeName}\n「${r.subcopy}」\n\n${r.desc}`;
+      const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText + '\n\n#キャリア診断 #Wakachi')}&url=${encodeURIComponent(location.href)}`;
+      document.getElementById('btn-share-x').href = xUrl;
+
+      window._shareText = shareText;
+
+      showScreen('screen-result');
+    }
+
+    function copyResult() {
+      const text = window._shareText || '';
+      navigator.clipboard.writeText(text).then(() => {
+        const label = document.getElementById('copy-label');
+        label.textContent = 'コピーしました';
+        setTimeout(() => { label.textContent = 'コピー'; }, 2000);
+      }).catch(() => {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        const label = document.getElementById('copy-label');
+        label.textContent = 'コピーしました';
+        setTimeout(() => { label.textContent = 'コピー'; }, 2000);
+      });
+    }
+
+    function restart() {
+      showScreen('screen-top');
+    }
+  </script>
+</body>
+</html>
