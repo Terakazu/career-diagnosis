@@ -706,12 +706,12 @@
       const r = results[mainType];
 
       // タイプ名（複合表示）
-      let typeDisplay = `あなたは${r.typeName}`;
+      let typeDisplay = `あなたは「${r.typeName}」です`;
       if (subInfo) {
         const subName = results[subInfo.type].typeName;
         typeDisplay += subInfo.isParallel
-          ? `＋${subName}`
-          : `（${subName}の傾向もあり）`;
+          ? `＋「${subName}」`
+          : `（「${subName}」の傾向もあり）`;
       }
       document.getElementById('result-type-name').textContent = typeDisplay;
       document.getElementById('result-subcopy').textContent = r.subcopy;
