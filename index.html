@@ -202,9 +202,102 @@
     }
 
     .result-type-name {
-      font-size: clamp(22px, 5vw, 28px);
+      font-size: clamp(18px, 4vw, 24px);
       font-weight: 700;
       color: var(--main);
+      line-height: 1.5;
+    }
+
+    .result-sub-desc {
+      font-size: 13px;
+      color: var(--sub);
+      line-height: 1.8;
+      border-left: 2px solid var(--border);
+      padding-left: 12px;
+    }
+
+    .email-form-wrap {
+      background: #F5EFE3;
+      border-radius: 10px;
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .email-form-label {
+      font-size: 13px;
+      color: var(--sub);
+      line-height: 1.7;
+    }
+
+    .email-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .email-input {
+      flex: 1;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 14px;
+      color: var(--main);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.2s;
+      min-width: 0;
+    }
+
+    .email-input:focus {
+      border-color: var(--accent);
+    }
+
+    .btn-email {
+      padding: 11px 20px;
+      border-radius: 8px;
+      background: var(--main);
+      color: var(--white);
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    .btn-email:hover { opacity: 0.85; }
+
+    .email-error {
+      font-size: 12px;
+      color: #C0392B;
+    }
+
+    .email-success {
+      font-size: 13px;
+      color: var(--sub);
+      line-height: 1.8;
+    }
+
+    .extra-section-e {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-top: 4px;
+    }
+
+    .extra-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--main);
+    }
+
+    .extra-text {
+      font-size: 14px;
+      color: var(--sub);
+      line-height: 1.85;
     }
 
     .result-subcopy {
@@ -357,7 +450,21 @@
     <p class="result-subcopy" id="result-subcopy"></p>
     <div class="result-divider"></div>
     <p class="result-desc" id="result-desc"></p>
+    <p class="result-sub-desc" id="result-sub-desc"></p>
     <div class="result-ws-text" id="result-ws-text"></div>
+
+    <!-- アップアップタイプ：メール登録フォーム -->
+    <div id="email-section" style="display:none;">
+      <div class="email-form-wrap" id="email-form-wrap">
+        <p class="email-form-label">余裕ができたとき、役立つ情報をお届けします。<br>メールアドレスを残しておきませんか。</p>
+        <div class="email-input-row">
+          <input type="email" id="email-input" class="email-input" placeholder="example@mail.com">
+          <button class="btn-email" onclick="submitEmail()">受け取る</button>
+        </div>
+        <p class="email-error" id="email-error" style="display:none;">メールアドレスを正しく入力してください</p>
+      </div>
+    </div>
+
     <a id="btn-apply" class="btn btn-primary" href="https://visioncarat.com" target="_blank" rel="noopener">体験会に申し込む</a>
     <div class="share-buttons">
       <a id="btn-share-x" class="btn-share" href="#" target="_blank" rel="noopener">
@@ -369,6 +476,15 @@
         <span id="copy-label">コピー</span>
       </button>
     </div>
+
+    <!-- 順調タイプ：追加セクション -->
+    <div id="extra-section-e" class="extra-section-e" style="display:none;">
+      <div class="result-divider"></div>
+      <p class="extra-title">それでも何か引っかかるなら</p>
+      <p class="extra-text">診断では順調と出たけれど、なんとなくモヤモヤが残っている。そんな感覚があるなら、それは次のステージへのサインかもしれません。気軽に話しに来てください。</p>
+      <a class="btn btn-outline" href="https://visioncarat.com" target="_blank" rel="noopener">体験会を見てみる</a>
+    </div>
+
     <button class="btn-retry" onclick="restart()">もう一度診断する</button>
   </div>
 
@@ -442,6 +558,7 @@
         subcopy: "やってるのに、手応えがない",
         desc: "目標はある、行動もしている。でも結果につながっていない感覚がある。それは意志や能力の問題ではなく、軌道修正の仕組みが足りていないだけかもしれない。",
         wsText: "Wa-kachiの体験会では、あなたの行動がなぜ空回りしているのかを一緒に整理します。まず一度、話しに来てください。",
+        subDesc: "行動と成果の間にズレが生じている状態です。動いているのに前に進めない感覚が続いています。",
         showApply: true,
       },
       B: {
@@ -449,6 +566,7 @@
         subcopy: "ちゃんとやってるのに、自分の感じがしない",
         desc: "動けていないのは、意志が弱いからではない。判断の基準が、いつの間にか自分の外側に置かれているから。自分が何を大切にしているかが言葉になると、動き方が変わる。",
         wsText: "Wa-kachiの体験会では、あなたの判断基準を自分の内側に取り戻すための最初の一歩を体験できます。",
+        subDesc: "判断の基準が自分の外側にある状態です。他者の評価を意識するあまり、自分の感覚を後回しにしがちです。",
         showApply: true,
       },
       C: {
@@ -456,6 +574,7 @@
         subcopy: "決めたはずなのに、これでいいのかわからない",
         desc: "大切なことが複数あって、どれも本物。だから決めきれない。これは優柔不断ではなく、複数の自分軸が整理されていない状態。統合できると、腹落ちした選択ができるようになる。",
         wsText: "Wa-kachiの体験会では、あなたの複数の価値観を整理して、納得感のある方向性を見つける体験ができます。",
+        subDesc: "大切にしたいことが複数あって整理しきれていない状態です。優柔不断ではなく、軸が豊かだからこそ決めきれないのです。",
         showApply: true,
       },
       D: {
@@ -463,6 +582,7 @@
         subcopy: "考えたいけど、それどころじゃない",
         desc: "今は余裕がない。それは本当のことで、無理に前に進もうとしなくていい。まず余白を作ることが先決。その準備ができたとき、Wa-kachiは力になれる。",
         wsText: "今すぐでなくていい。余裕が生まれたとき、また来てください。",
+        subDesc: "今は余裕がない状態です。まず自分を休ませることが最優先です。",
         showApply: false,
       },
       E: {
@@ -470,6 +590,7 @@
         subcopy: "自分らしく、進めている",
         desc: "今のあなたは、自分の軸で動けている。無理にキャリア支援を受ける必要はない。このまま進んでいい。",
         wsText: "もし将来、新しいステージで壁を感じたときは、Wa-kachiを思い出してください。",
+        subDesc: "自分の軸で動けている状態です。迷いが少なく、納得感を持って前に進めています。",
         showApply: false,
       },
     };
@@ -545,18 +666,12 @@
 
     function calcResult() {
       const eCount = scores.E;
-      const others = scores.A + scores.B + scores.C + scores.D;
 
-      // E最多、またはE複数かつ他が分散
       if (eCount >= 4) return 'E';
       const maxNonE = Math.max(scores.A, scores.B, scores.C, scores.D);
       if (eCount > maxNonE) return 'E';
-      if (eCount >= 2 && eCount === maxNonE) {
-        // E複数かつ他と同数の場合 → E優先
-        return 'E';
-      }
+      if (eCount >= 2 && eCount === maxNonE) return 'E';
 
-      // 最多タイプを特定
       const types = ['A', 'B', 'C', 'D'];
       let max = 0;
       types.forEach(t => { if (scores[t] > max) max = scores[t]; });
@@ -564,34 +679,98 @@
       const tied = types.filter(t => scores[t] === max);
       if (tied.length === 1) return tied[0];
 
-      // 同数の場合はB優先
       if (tied.includes('B')) return 'B';
       return tied[0];
     }
 
-    function showResult() {
-      const type = calcResult();
-      const r = results[type];
+    function calcSubType(mainType) {
+      const allTypes = ['A', 'B', 'C', 'D', 'E'];
+      const mainScore = scores[mainType];
 
-      document.getElementById('result-type-name').textContent = r.typeName;
+      // 主タイプと同点のタイプ → 並列
+      const parallel = allTypes.filter(t => t !== mainType && scores[t] === mainScore);
+      if (parallel.length > 0) {
+        return { type: parallel[0], isParallel: true };
+      }
+
+      // 2番目に多いタイプ
+      const others = allTypes.filter(t => t !== mainType && scores[t] > 0);
+      if (others.length === 0) return null;
+      others.sort((a, b) => scores[b] - scores[a]);
+      return { type: others[0], isParallel: false };
+    }
+
+    function showResult() {
+      const mainType = calcResult();
+      const subInfo = calcSubType(mainType);
+      const r = results[mainType];
+
+      // タイプ名（複合表示）
+      let typeDisplay = `あなたは${r.typeName}`;
+      if (subInfo) {
+        const subName = results[subInfo.type].typeName;
+        typeDisplay += subInfo.isParallel
+          ? `＋${subName}`
+          : `（${subName}の傾向もあり）`;
+      }
+      document.getElementById('result-type-name').textContent = typeDisplay;
       document.getElementById('result-subcopy').textContent = r.subcopy;
       document.getElementById('result-desc').textContent = r.desc;
       document.getElementById('result-ws-text').textContent = r.wsText;
 
-      const applyBtn = document.getElementById('btn-apply');
-      if (r.showApply) {
-        applyBtn.style.display = 'flex';
+      // 副タイプ説明
+      const subDescEl = document.getElementById('result-sub-desc');
+      if (subInfo) {
+        subDescEl.textContent = results[subInfo.type].subDesc;
+        subDescEl.style.display = 'block';
       } else {
-        applyBtn.style.display = 'none';
+        subDescEl.style.display = 'none';
       }
 
+      // 申込みボタン
+      document.getElementById('btn-apply').style.display = r.showApply ? 'flex' : 'none';
+
+      // メール登録フォーム（Dタイプのみ）
+      const emailSection = document.getElementById('email-section');
+      emailSection.style.display = mainType === 'D' ? 'block' : 'none';
+      // フォームをリセット
+      document.getElementById('email-form-wrap').innerHTML = `
+        <p class="email-form-label">余裕ができたとき、役立つ情報をお届けします。<br>メールアドレスを残しておきませんか。</p>
+        <div class="email-input-row">
+          <input type="email" id="email-input" class="email-input" placeholder="example@mail.com">
+          <button class="btn-email" onclick="submitEmail()">受け取る</button>
+        </div>
+        <p class="email-error" id="email-error" style="display:none;">メールアドレスを正しく入力してください</p>
+      `;
+
+      // 順調タイプ追加セクション
+      document.getElementById('extra-section-e').style.display = mainType === 'E' ? 'flex' : 'none';
+
+      // シェアテキスト
       const shareText = `キャリア診断結果：${r.typeName}\n「${r.subcopy}」\n\n${r.desc}`;
       const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText + '\n\n#キャリア診断 #Wakachi')}&url=${encodeURIComponent(location.href)}`;
       document.getElementById('btn-share-x').href = xUrl;
-
       window._shareText = shareText;
 
       showScreen('screen-result');
+    }
+
+    function submitEmail() {
+      const input = document.getElementById('email-input');
+      const email = input ? input.value.trim() : '';
+      const errorEl = document.getElementById('email-error');
+
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (errorEl) errorEl.style.display = 'block';
+        return;
+      }
+
+      const subject = encodeURIComponent('【メール登録】キャリア診断より');
+      const body = encodeURIComponent(`以下のメールアドレスから登録がありました。\n\n${email}`);
+      window.location.href = `mailto:kazuko@visioncarat.com?subject=${subject}&body=${body}`;
+
+      document.getElementById('email-form-wrap').innerHTML =
+        '<p class="email-success">余裕ができたとき、またここに戻ってきてください。Wa-kachiからときどき、役立つ情報をお届けします。</p>';
     }
 
     function copyResult() {
